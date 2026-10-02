@@ -23,8 +23,32 @@ async def lifespan(app: FastAPI):
     try:
         TemplateService.seed_templates(db)
         logger.info("Templates verified and seeded successfully.")
+
+        # Seed default demo user for instant login
+        from backend.app.models.user import User
+        from backend.app.security.auth_handler import get_password_hash
+        import uuid
+
+        demo_email = "demo@legalease.app"
+        existing = db.query(User).filter(User.email == demo_email).first()
+        if not existing:
+            demo_user = User(
+                id=uuid.uuid4(),
+                email=demo_email,
+                password_hash=get_password_hash("password123"),
+                full_name="Alex Morgan",
+                is_active=True
+            )
+            db.add(demo_user)
+            db.commit()
+            logger.info(f"Demo user created: {demo_email}")
+        else:
+            if not existing.is_active:
+                existing.is_active = True
+                db.commit()
+            logger.info(f"Demo user verified: {demo_email}")
     except Exception as e:
-        logger.error(f"Error seeding templates: {e}")
+        logger.error(f"Error seeding startup data: {e}")
     finally:
         db.close()
 
@@ -45,8 +69,9 @@ app = FastAPI(
 
 # CORS
 origins = settings.cors_origins_list
-if "*" not in origins and "http://localhost:3000" not in origins:
-    origins.append("http://localhost:3000")
+for default_origin in ["http://localhost:3000", "http://127.0.0.1:3000", "https://legal-ease-two-red.vercel.app"]:
+    if default_origin not in origins and "*" not in origins:
+        origins.append(default_origin)
 
 app.add_middleware(
     CORSMiddleware,
@@ -61,11 +86,24 @@ app.add_middleware(
 app.add_middleware(StructuredLoggingMiddleware)
 
 
+def _get_cors_headers(request: Request) -> dict:
+    origin = request.headers.get("origin")
+    if origin:
+        return {
+            "Access-Control-Allow-Origin": origin,
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Allow-Methods": "*",
+        }
+    return {}
+
+
 # Normalized Error Handling
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     return JSONResponse(
         status_code=exc.status_code,
+        headers=_get_cors_headers(request),
         content={
             "success": False,
             "error": {
@@ -83,6 +121,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     msg = f"Validation error at '{first_error.get('loc', ['field'])[-1]}': {first_error.get('msg', 'Invalid input')}"
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        headers=_get_cors_headers(request),
         content={
             "success": False,
             "error": {
@@ -99,6 +138,7 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
     logger.exception(f"Unhandled server error: {exc}")
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        headers=_get_cors_headers(request),
         content={
             "success": False,
             "error": {

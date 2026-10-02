@@ -49,14 +49,34 @@ async function request<T = any>(
       headers,
     });
 
-    const json: ApiResponse<T> = await res.json();
+    const text = await res.text();
+    let json: any = null;
+    try {
+      json = JSON.parse(text);
+    } catch {
+      return {
+        success: false,
+        error: {
+          code: `HTTP_${res.status}`,
+          message: res.status === 401
+            ? "Invalid email or password."
+            : res.status >= 500
+            ? "Server is currently waking up or unavailable. Please wait a few seconds and try again."
+            : text.slice(0, 150) || `Request failed with status ${res.status}`,
+        },
+      };
+    }
+
     return json;
   } catch (err: any) {
+    const isNetworkErr = err?.name === "TypeError" || err?.message?.toLowerCase().includes("fetch");
     return {
       success: false,
       error: {
         code: "NETWORK_ERROR",
-        message: err.message || "Unable to communicate with LegalEase server.",
+        message: isNetworkErr
+          ? "Unable to reach server. If using cloud hosting, the server may be waking up from idle (please wait 20-30s and try again)."
+          : err.message || "Unable to communicate with LegalEase server.",
       },
     };
   }
