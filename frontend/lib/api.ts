@@ -1,6 +1,10 @@
 import { ApiResponse, User, DocumentItem, DocumentListItem, DocumentVersion, Template, UploadResponse, DocumentAnalysisResponse } from "./types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+let rawBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+if (rawBase && !rawBase.endsWith("/api") && !rawBase.endsWith("/api/")) {
+  rawBase = rawBase.replace(/\/+$/, "") + "/api";
+}
+const API_BASE_URL = rawBase.replace(/\/+$/, "");
 
 function getToken(): string | null {
   if (typeof window !== "undefined") {
