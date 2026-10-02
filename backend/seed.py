@@ -29,14 +29,16 @@ def run_seed():
                 id=uuid.uuid4(),
                 email=demo_email,
                 password_hash=get_password_hash("password123"),
-                full_name="Alex Morgan",
+                full_name="Demo User",
                 is_active=True
             )
             db.add(demo_user)
             db.commit()
             print(f"Created demo user: {demo_email} (password: password123)")
         else:
-            print(f"Demo user already exists: {demo_email}")
+            existing.full_name = "Demo User"
+            db.commit()
+            print(f"Demo user updated: {demo_email}")
 
         print("Database seed complete.")
     finally:

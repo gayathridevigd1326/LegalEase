@@ -115,10 +115,10 @@ with st.sidebar:
 # ---------------------------------------------------------
 # Preset Scenarios Data Mapping (LegalEase.pdf Scenarios)
 # ---------------------------------------------------------
-default_doc_type = "Freelance Work Contract"
-default_parties = "Jane Doe (Service Provider), TechNova Inc. (Client)"
-default_terms = "Payment to be made within 30 days of invoice; The provider agrees to deliver work by the agreed deadline; Confidentiality must be maintained at all times; Either party may terminate with 15 days notice"
-default_dates = "April 10, 2025"
+default_doc_type = "Employment Contract"
+default_parties = ""
+default_terms = ""
+default_dates = ""
 
 if scenario == "Scenario 1: Employment Contract":
     default_doc_type = "Employment Contract"
@@ -173,20 +173,23 @@ with input_col1:
         "Parties Involved:",
         value=default_parties,
         height=95,
-        help="Names, entities, and respective roles (e.g. 'Jane Doe (Service Provider), TechNova Inc. (Client)')"
+        placeholder="Enter contracting parties and their roles (e.g. First Party (Employer), Second Party (Employee))",
+        help="Names, entities, and respective roles"
     )
 
 with input_col2:
     dates_input = st.text_input(
         "Effective Date:",
         value=default_dates,
-        help="The date when the agreement becomes legally enforceable (e.g. 'April 10, 2025')"
+        placeholder="e.g. October 15, 2026",
+        help="The date when the agreement becomes legally enforceable"
     )
 
     terms_input = st.text_area(
         "Terms & Conditions (Use semicolons for bullet points):",
         value=default_terms,
         height=95,
+        placeholder="Enter key covenants, compensation, responsibilities, or termination terms separated by semicolons (;)",
         help="Specific covenants, rules, payment terms, or conditions separated by semicolons (;)"
     )
 

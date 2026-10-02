@@ -36,7 +36,7 @@ export default function SettingsPage() {
   const [savingPassword, setSavingPassword] = useState(false);
 
   // Preferences
-  const [defaultJurisdiction, setDefaultJurisdiction] = useState("Delaware, United States");
+  const [defaultJurisdiction, setDefaultJurisdiction] = useState("General Commercial Law");
   const [themePreference, setThemePreference] = useState("system");
 
   useEffect(() => {

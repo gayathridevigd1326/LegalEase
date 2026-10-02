@@ -35,9 +35,20 @@ export default function LoginPage() {
     }
   };
 
-  const handleUseDemo = () => {
+  const handleDirectDemoLogin = async () => {
+    setErrorMsg("");
+    setIsLoading(true);
     setEmail("demo@legalease.app");
     setPassword("password123");
+    const res = await login("demo@legalease.app", "password123");
+    setIsLoading(false);
+
+    if (res.success) {
+      success("Welcome to LegalEase!");
+      router.push("/dashboard");
+    } else {
+      setErrorMsg(res.error || "Login failed. Please check your credentials.");
+    }
   };
 
   return (
@@ -109,7 +120,7 @@ export default function LoginPage() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-white px-2 text-slate-400 dark:bg-slate-900">
-                  Fast Evaluation
+                  Quick Access
                 </span>
               </div>
             </div>
@@ -118,11 +129,12 @@ export default function LoginPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={handleUseDemo}
-                className="w-full gap-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-950/20"
+                onClick={handleDirectDemoLogin}
+                isLoading={isLoading}
+                className="w-full gap-2 border-slate-200 dark:border-slate-800 hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 text-xs font-semibold"
               >
                 <Sparkles className="h-4 w-4 text-blue-600" />
-                Fill Demo Credentials (demo@legalease.app)
+                Sign In as Demo User
               </Button>
             </div>
           </div>

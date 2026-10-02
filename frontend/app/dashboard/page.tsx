@@ -33,6 +33,7 @@ export default function DashboardPage() {
   const { success, error: toastError } = useToast();
   const [documents, setDocuments] = useState<DocumentListItem[]>([]);
   const [totalCount, setTotalCount] = useState(0);
+  const [templateCount, setTemplateCount] = useState(0);
   const [loadingDocs, setLoadingDocs] = useState(true);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
 
@@ -53,6 +54,11 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchRecentDocuments();
+    api.templates.list().then((res) => {
+      if (res.success && res.data) {
+        setTemplateCount(res.data.length);
+      }
+    });
   }, []);
 
   const handleDuplicate = async (docId: string) => {
@@ -97,7 +103,7 @@ export default function DashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200/80 pb-6 dark:border-slate-800">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Welcome back, {user?.full_name ? user.full_name.split(" ")[0] : "there"}
+            Welcome back{user?.full_name ? `, ${user.full_name === "Demo User" ? "Demo User" : user.full_name.split(" ")[0]}` : ""}
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Draft, review, analyze, and manage your legal contracts with AI assistance.
@@ -218,7 +224,9 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="text-xs text-slate-500 font-medium">Templates Ready</p>
-              <p className="text-xl font-bold text-slate-900 dark:text-white">17 Built-in</p>
+              <p className="text-xl font-bold text-slate-900 dark:text-white">
+                {templateCount > 0 ? `${templateCount} Available` : "Templates Ready"}
+              </p>
             </div>
           </div>
         </Card>

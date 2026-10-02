@@ -49,8 +49,8 @@ function NewDocumentWizardContent() {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   // Step 2: Jurisdiction
-  const [jurisdictionCountry, setJurisdictionCountry] = useState("United States");
-  const [jurisdictionState, setJurisdictionState] = useState("Delaware");
+  const [jurisdictionCountry, setJurisdictionCountry] = useState("");
+  const [jurisdictionState, setJurisdictionState] = useState("");
   const [isNotSpecified, setIsNotSpecified] = useState(false);
 
   // Step 3: Parties
@@ -154,9 +154,9 @@ function NewDocumentWizardContent() {
     setTerms((prev) => ({ ...prev, [fieldName]: val }));
   };
 
-  const computedJurisdiction = isNotSpecified
-    ? "Not specified"
-    : [jurisdictionState, jurisdictionCountry].filter(Boolean).join(", ");
+  const computedJurisdiction = isNotSpecified || (!jurisdictionCountry.trim() && !jurisdictionState.trim())
+    ? "General Commercial Law"
+    : [jurisdictionState.trim(), jurisdictionCountry.trim()].filter(Boolean).join(", ");
 
   const handleGenerate = async () => {
     // Validate minimal party details
