@@ -266,7 +266,6 @@ python scripts/audit_project.py
 cd frontend && npm run build
 ```
 Backend=https://legalease-api-gley.onrender.com
-'''
 Frontend=https://legal-ease-two-red.vercel.app/
 ---
 
