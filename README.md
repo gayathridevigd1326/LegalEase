@@ -265,7 +265,8 @@ python scripts/audit_project.py
 # Production build of the Next.js frontend
 cd frontend && npm run build
 ```
-
+Backend=https://legalease-api-gley.onrender.com
+Frontend=https://legal-ease-two-red.vercel.app/
 ---
 
 ## 📚 Documentation
